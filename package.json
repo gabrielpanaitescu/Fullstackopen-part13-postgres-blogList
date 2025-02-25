@@ -1,0 +1,31 @@
+{
+  "name": "fullstackopen-part13-postgres-bloglist",
+  "version": "1.0.0",
+  "description": "Fullstackopen Part 13. BlogList API with Postgres DB using Sequelize ORM",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gabrielpanaitescu/Fullstackopen-part13-postgres-blogList.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gabrielpanaitescu/Fullstackopen-part13-postgres-blogList/issues"
+  },
+  "homepage": "https://github.com/gabrielpanaitescu/Fullstackopen-part13-postgres-blogList#readme",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "pg": "^8.13.3",
+    "sequelize": "^6.37.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}
