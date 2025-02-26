@@ -41,4 +41,16 @@ blogsRouter.delete("/:id", blogFinder, async (req, res) => {
   res.status(204).end();
 });
 
+blogsRouter.put("/:id", blogFinder, async (req, res) => {
+  const blog = req.blog;
+
+  if (blog) {
+    blog.likes = req.body.likes;
+    await blog.save();
+    res.json({ likes: blog.likes });
+  } else {
+    res.status(404).end();
+  }
+});
+
 module.exports = blogsRouter;
