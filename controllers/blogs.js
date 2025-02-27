@@ -40,14 +40,20 @@ blogsRouter.get("/:id", blogFinder, async (req, res) => {
   }
 });
 
-blogsRouter.delete("/:id", blogFinder, async (req, res) => {
+blogsRouter.delete("/:id", tokenExtractor, blogFinder, async (req, res) => {
   const blog = req.blog;
 
-  if (blog) {
-    await blog.destroy();
-  }
+  if (!blog) return res.status(204).end();
 
-  res.status(204).end();
+  const user = await User.findByPk(req.decodedToken.id);
+  const isBlogAddedByLoggedUser = blog.userId === user.id;
+
+  if (isBlogAddedByLoggedUser) {
+    await blog.destroy();
+    res.status(204).end();
+  } else {
+    res.status(401).json({ error: "target blog is not added by logged user" });
+  }
 });
 
 blogsRouter.put("/:id", blogFinder, async (req, res) => {
