@@ -2,17 +2,13 @@ const { SECRET } = require("../util/config");
 const jwt = require("jsonwebtoken");
 
 const errorMiddleware = async (err, req, res, next) => {
-  console.log(
-    "Error Middleware: ",
-    "Error.name:",
-    err.name,
-    "Error:",
-    err.message
-  );
-  if (
-    err.name === "SequelizeValidationError" ||
-    err.name === "SequelizeDatabaseError"
-  ) {
+  console.log("Error Middleware -> ");
+  console.log("!!!!Error.name!!!!!", err.name);
+  console.log("!!!! Complete Error!!!!!!!", err);
+  if (err.name === "SequelizeValidationError") {
+    const errMessages = err.errors.map((error) => error.message);
+    return res.status(400).json({ error: errMessages });
+  } else if (err.name === "SequelizeDatabaseError") {
     return res.status(400).json({ error: err.message });
   } else if (
     err.name === "JsonWebTokenError" ||
