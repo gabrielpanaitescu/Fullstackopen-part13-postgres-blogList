@@ -2,6 +2,7 @@ const blogsRouter = require("express").Router();
 const { Op } = require("sequelize");
 const { Blog, User } = require("../models");
 const { tokenExtractor } = require("../util/middleware");
+const { sequelize } = require("../util/db");
 
 const blogFinder = async (req, res, next) => {
   req.blog = await Blog.findByPk(req.params.id);
@@ -36,6 +37,7 @@ blogsRouter.get("/", async (req, res) => {
       attributes: ["name"],
     },
     where,
+    order: [["likes", "DESC"]],
   });
   res.json(blogs);
 });
