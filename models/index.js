@@ -18,4 +18,5 @@ Blog.belongsToMany(User, { through: ReadingList, as: "marked_by" });
 module.exports = {
   Blog,
   User,
+  ReadingList,
 };
