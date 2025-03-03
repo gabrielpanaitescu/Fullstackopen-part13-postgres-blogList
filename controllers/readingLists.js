@@ -1,4 +1,4 @@
-const { Blog, User, ReadingList } = require("../models");
+const { ReadingList } = require("../models");
 const { tokenExtractor } = require("../util/middleware");
 
 const router = require("express").Router();
@@ -6,7 +6,7 @@ const router = require("express").Router();
 router.post("/", async (req, res) => {
   const { userId, blogId } = req.body;
 
-  const result = await ReadingList.create({
+  await ReadingList.create({
     userId,
     blogId,
   });
