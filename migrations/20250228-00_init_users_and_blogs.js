@@ -1,9 +1,7 @@
-const { DataTypes, Sequelize } = require("sequelize");
+const { DataTypes } = require("sequelize");
 
 module.exports = {
   up: async ({ context: queryInterface }) => {
-    // const transaction = await queryInterface.sequelize.transaction();
-
     await queryInterface.createTable("blogs", {
       id: {
         primaryKey: true,

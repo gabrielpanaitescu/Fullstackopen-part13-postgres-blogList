@@ -31,7 +31,7 @@ blogsRouter.get("/", async (req, res) => {
     },
     include: {
       model: User,
-      attributes: ["name"],
+      attributes: ["username"],
     },
     where,
     order: [["likes", "DESC"]],
