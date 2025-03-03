@@ -7,13 +7,21 @@ router.get("/", async (req, res) => {
     attributes: {
       exclude: ["passwordHash"],
     },
-    include: [
-      {
-        model: Blog,
-        attributes: {
-          exclude: ["userId"],
-        },
+    include: {
+      model: Blog,
+      attributes: {
+        exclude: ["userId"],
       },
+    },
+  });
+
+  res.json(users);
+});
+
+router.get("/:id", async (req, res) => {
+  const user = await User.findByPk(req.params.id, {
+    include: [
+      { model: Blog, attributes: { exclude: ["userId"] } },
       {
         model: Blog,
         as: "marked_blogs",
@@ -27,7 +35,11 @@ router.get("/", async (req, res) => {
     ],
   });
 
-  res.json(users);
+  if (user) {
+    res.json({ user });
+  } else {
+    res.status(404).end();
+  }
 });
 
 router.post("/", async (req, res) => {
