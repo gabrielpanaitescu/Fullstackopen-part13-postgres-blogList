@@ -3,7 +3,6 @@ const { User } = require("../models");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { SECRET } = require("../util/config");
-const Session = require("../models/session");
 
 router.post("/", async (req, res) => {
   const { username, password } = req.body;

@@ -1,5 +1,5 @@
 const { ReadingList } = require("../models");
-const { tokenExtractor, verifySession } = require("../util/middleware");
+const { getUserFromToken } = require("../util/middleware");
 
 const router = require("express").Router();
 
@@ -14,7 +14,7 @@ router.post("/", async (req, res) => {
   res.status(201).end();
 });
 
-router.put("/:id", tokenExtractor, verifySession, async (req, res) => {
+router.put("/:id", getUserFromToken, async (req, res) => {
   const readingListEntry = await ReadingList.findOne({
     where: {
       userId: req.user.id,

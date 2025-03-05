@@ -24,9 +24,11 @@ const runMigrations = async () => {
   });
 };
 
-rollbackMigration = async () => {
+const rollbackMigration = async () => {
+  await sequelize.authenticate();
   const migrator = new Umzug(migrationsConfig);
   await migrator.down();
+  sequelize.close();
 };
 
 const connectToDb = async () => {

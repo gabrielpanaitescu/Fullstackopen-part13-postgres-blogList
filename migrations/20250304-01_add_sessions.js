@@ -8,6 +8,10 @@ module.exports = {
         primaryKey: true,
         autoIncrement: true,
       },
+      created_at: {
+        type: DataTypes.DATE,
+        allowNull: false,
+      },
       user_id: {
         type: DataTypes.INTEGER,
         allowNull: false,

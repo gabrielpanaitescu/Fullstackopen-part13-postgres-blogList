@@ -9,6 +9,9 @@ Blog.belongsTo(User);
 User.belongsToMany(Blog, { through: ReadingList, as: "marked_blogs" });
 Blog.belongsToMany(User, { through: ReadingList, as: "marked_by" });
 
+Blog.hasMany(ReadingList);
+ReadingList.belongsTo(Blog);
+
 User.hasMany(Session);
 Session.belongsTo(User);
 
@@ -16,7 +19,6 @@ Session.belongsTo(User);
 //   await User.sync({ alter: true });
 //   await Blog.sync({ alter: true });
 // };
-
 // syncModels();
 
 module.exports = {

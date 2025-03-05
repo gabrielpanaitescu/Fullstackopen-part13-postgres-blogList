@@ -23,7 +23,8 @@ Session.init(
   },
   {
     sequelize,
-    timestamps: false,
+    timestamps: true,
+    updatedAt: false,
     underscored: true,
     modelName: "session",
   }

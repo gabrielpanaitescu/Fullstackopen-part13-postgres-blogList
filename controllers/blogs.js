@@ -1,7 +1,7 @@
 const blogsRouter = require("express").Router();
 const { Op } = require("sequelize");
-const { Blog, User } = require("../models");
-const { tokenExtractor, verifySession } = require("../util/middleware");
+const { Blog, User, ReadingList } = require("../models");
+const { getUserFromToken } = require("../util/middleware");
 
 const blogFinder = async (req, res, next) => {
   req.blog = await Blog.findByPk(req.params.id);
@@ -29,21 +29,29 @@ blogsRouter.get("/", async (req, res) => {
     attributes: {
       exclude: ["userId"],
     },
-    include: {
-      model: User,
-      attributes: ["username"],
-    },
+    include: [
+      {
+        model: User,
+        attributes: ["username"],
+      },
+      {
+        model: ReadingList,
+        attributes: {
+          exclude: ["blogId"],
+        },
+      },
+    ],
+
     where,
     order: [["likes", "DESC"]],
   });
   res.json(blogs);
 });
 
-blogsRouter.post("/", tokenExtractor, verifySession, async (req, res) => {
+blogsRouter.post("/", getUserFromToken, async (req, res) => {
   const blog = await Blog.create({
     ...req.body,
     userId: req.user.id,
-    date: new Date(),
   });
   res.status(201).json(blog);
 });
@@ -60,8 +68,8 @@ blogsRouter.get("/:id", blogFinder, async (req, res) => {
 
 blogsRouter.delete(
   "/:id",
-  tokenExtractor,
-  verifySession,
+  getUserFromToken,
+
   blogFinder,
   async (req, res) => {
     const blog = req.blog;
@@ -87,7 +95,7 @@ blogsRouter.put("/:id", blogFinder, async (req, res) => {
   if (blog) {
     blog.likes = req.body.likes;
     await blog.save();
-    res.json({ likes: blog.likes });
+    res.json(blog);
   } else {
     res.status(404).end();
   }
