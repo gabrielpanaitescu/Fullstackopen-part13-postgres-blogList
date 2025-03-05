@@ -1,5 +1,7 @@
 const { SECRET } = require("../util/config");
 const jwt = require("jsonwebtoken");
+const Session = require("../models/session");
+const { User } = require("../models");
 
 const errorMiddleware = async (err, req, res, next) => {
   console.log("Error Middleware -> ");
@@ -15,13 +17,33 @@ const errorMiddleware = async (err, req, res, next) => {
     err.name === "TokenExpiredError"
   ) {
     return res.status(400).json({ error: err.message });
+  } else if (err.name === "SessionError") {
+    return res.status(401).json({ error: err.message });
   } else if (err.message) {
     return res
       .status(400)
-      .json({ error: `Unnamed error caught in middleware: ${err}` });
+      .json({ error: `Unhandled error caught in middleware: ${err}` });
   }
 
   next(err);
+};
+
+const verifySession = async (req, res, next) => {
+  const user = await User.findByPk(req.decodedToken.userId);
+  const session = await Session.findOne({
+    where: { id: req.decodedToken.sessionId, userId: req.decodedToken.userId },
+  });
+
+  if (!session) {
+    const error = new Error("Invalid login session");
+    error.name = "SessionError";
+    throw error;
+  }
+
+  req.user = user;
+  req.session = session;
+
+  next();
 };
 
 const tokenExtractor = async (req, res, next) => {
@@ -43,4 +65,5 @@ module.exports = {
   errorMiddleware,
   unknownEndpoint,
   tokenExtractor,
+  verifySession,
 };

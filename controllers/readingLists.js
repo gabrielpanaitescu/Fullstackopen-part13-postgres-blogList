@@ -1,5 +1,5 @@
 const { ReadingList } = require("../models");
-const { tokenExtractor } = require("../util/middleware");
+const { tokenExtractor, verifySession } = require("../util/middleware");
 
 const router = require("express").Router();
 
@@ -14,10 +14,10 @@ router.post("/", async (req, res) => {
   res.status(201).end();
 });
 
-router.put("/:id", tokenExtractor, async (req, res) => {
+router.put("/:id", tokenExtractor, verifySession, async (req, res) => {
   const readingListEntry = await ReadingList.findOne({
     where: {
-      userId: req.decodedToken.id,
+      userId: req.user.id,
       blogId: Number(req.params.id),
     },
   });

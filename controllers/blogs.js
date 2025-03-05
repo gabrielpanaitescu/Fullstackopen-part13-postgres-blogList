@@ -1,7 +1,7 @@
 const blogsRouter = require("express").Router();
 const { Op } = require("sequelize");
 const { Blog, User } = require("../models");
-const { tokenExtractor } = require("../util/middleware");
+const { tokenExtractor, verifySession } = require("../util/middleware");
 
 const blogFinder = async (req, res, next) => {
   req.blog = await Blog.findByPk(req.params.id);
@@ -39,11 +39,10 @@ blogsRouter.get("/", async (req, res) => {
   res.json(blogs);
 });
 
-blogsRouter.post("/", tokenExtractor, async (req, res) => {
-  const user = await User.findByPk(req.decodedToken.id);
+blogsRouter.post("/", tokenExtractor, verifySession, async (req, res) => {
   const blog = await Blog.create({
     ...req.body,
-    userId: user.id,
+    userId: req.user.id,
     date: new Date(),
   });
   res.status(201).json(blog);
@@ -59,21 +58,28 @@ blogsRouter.get("/:id", blogFinder, async (req, res) => {
   }
 });
 
-blogsRouter.delete("/:id", tokenExtractor, blogFinder, async (req, res) => {
-  const blog = req.blog;
+blogsRouter.delete(
+  "/:id",
+  tokenExtractor,
+  verifySession,
+  blogFinder,
+  async (req, res) => {
+    const blog = req.blog;
 
-  if (!blog) return res.status(204).end();
+    if (!blog) return res.status(204).end();
 
-  const user = await User.findByPk(req.decodedToken.id);
-  const isBlogAddedByLoggedUser = blog.userId === user.id;
+    const isBlogAddedByLoggedUser = blog.userId === req.user.id;
 
-  if (isBlogAddedByLoggedUser) {
-    await blog.destroy();
-    res.status(204).end();
-  } else {
-    res.status(401).json({ error: "target blog is not added by logged user" });
+    if (isBlogAddedByLoggedUser) {
+      await blog.destroy();
+      res.status(204).end();
+    } else {
+      res
+        .status(401)
+        .json({ error: "target blog is not added by logged user" });
+    }
   }
-});
+);
 
 blogsRouter.put("/:id", blogFinder, async (req, res) => {
   const blog = req.blog;
