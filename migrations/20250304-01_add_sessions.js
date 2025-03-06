@@ -20,6 +20,15 @@ module.exports = {
           key: "id",
         },
       },
+      refresh_id: {
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4,
+        allowNull: false,
+      },
+      expiry_date: {
+        type: DataTypes.DATE,
+        allowNull: false,
+      },
     });
   },
   down: async ({ context: queryInterface }) => {

@@ -1,8 +1,8 @@
 const router = require("express").Router();
-const { User } = require("../models");
+const { User, Session } = require("../models");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { SECRET } = require("../util/config");
+const { SECRET, JWT_EXPIRATION } = require("../util/config");
 
 router.post("/", async (req, res) => {
   const { username, password } = req.body;
@@ -22,18 +22,24 @@ router.post("/", async (req, res) => {
         .status(401)
         .json({ error: "user is disabled, please contact an admin" });
 
-    const session = await user.createSession();
+    // const session = await user.createSession();
+    const session = await Session.createSession(user.id);
 
-    const userForToken = {
+    const payload = {
       userId: user.id,
       username: user.username,
       sessionId: session.id,
     };
-    const token = jwt.sign(userForToken, SECRET, {
-      expiresIn: "2h",
+    const token = jwt.sign(payload, SECRET, {
+      expiresIn: JWT_EXPIRATION,
     });
 
-    res.json({ username: user.username, name: user.name, token });
+    res.json({
+      username: user.username,
+      name: user.name,
+      token,
+      refreshId: session.refreshId,
+    });
   } else {
     res.status(401).json({ error: "incorrect user or password" });
   }
